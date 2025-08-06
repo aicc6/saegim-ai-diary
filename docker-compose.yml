@@ -7,7 +7,7 @@ services:
     expose:
       - "3000"
     networks:
-      - saegim-network
+      - aicc-net
 
   backend:
     build: ./backend
@@ -15,8 +15,8 @@ services:
     expose:
       - "8000"
     networks:
-      - saegim-network
+      - aicc-net
 
 networks:
-  saegim-network:
-    driver: bridge 
+  aicc-net:
+    external: true
