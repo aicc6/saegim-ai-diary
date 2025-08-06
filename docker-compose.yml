@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: saegim-frontend
+    expose:
+      - "3000"
+    networks:
+      - saegim-network
+
+  backend:
+    build: ./backend
+    container_name: saegim-backend
+    expose:
+      - "8000"
+    networks:
+      - saegim-network
+
+networks:
+  saegim-network:
+    driver: bridge 
