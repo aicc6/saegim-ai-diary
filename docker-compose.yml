@@ -1,22 +1,50 @@
-version: '3.8'
+pipeline {
+    agent any
 
-services:
-  frontend:
-    build: ./frontend
-    container_name: saegim-frontend
-    expose:
-      - "3000"
-    networks:
-      - aicc-net
+    environment {
+        REMOTE_USER = 'aicc'
+        REMOTE_HOST = '192.168.0.80'
+        REMOTE_DIR = '/home/aicc/saegim-ai-diary'
+        SSH_KEY = '~/.ssh/id_rsa'
+    }
 
-  backend:
-    build: ./backend
-    container_name: saegim-backend
-    expose:
-      - "8000"
-    networks:
-      - aicc-net
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/aicc6/saegim-ai-diary.git',
+                        credentialsId: 'github-https-token'
+                    ]]
+                ])
+            }
+        }
 
-networks:
-  aicc-net:
-    external: true
+        stage('Deploy to Remote with Docker Compose') {
+            steps {
+                sh '''
+                echo "[1] 원격 서버 디렉토리 준비"
+                ssh -i ${SSH_KEY} ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"
+
+                echo "[2] 소스 전송"
+                scp -i ${SSH_KEY} -r * ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
+
+                echo "[3] 도커 컴포즈로 빌드 및 실행"
+                ssh -i ${SSH_KEY} ${REMOTE_USER}@${REMOTE_HOST} "
+                    cd ${REMOTE_DIR} &&
+                    docker-compose build &&
+                    docker-compose up -d
+                "
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

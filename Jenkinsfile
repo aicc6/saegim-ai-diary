@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    environment {
+        REMOTE_USER = 'aicc'
+        REMOTE_HOST = '192.168.0.80'
+        REMOTE_DIR = '/home/aicc/saegim-ai-diary'
+        SSH_KEY = '~/.ssh/id_rsa'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,27 +15,29 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/USER/saegim-ai-diary.git',
+                        url: 'https://github.com/aicc6/saegim-ai-diary.git',
                         credentialsId: 'github-https-token'
                     ]]
                 ])
             }
         }
 
-        stage('Frontend Build') {
+        stage('Deploy to Remote with Docker Compose') {
             steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
+                sh '''
+                echo "[1] 원격 서버 디렉토리 생성 또는 유지"
+                ssh -i ${SSH_KEY} ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"
 
-        stage('Docker Deploy') {
-            steps {
-                sh 'docker compose down || true'
-                sh 'docker compose build'
-                sh 'docker compose up -d'
+                echo "[2] 코드 파일 원격 서버로 전송"
+                scp -i ${SSH_KEY} -r * ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
+
+                echo "[3] Docker Compose 빌드 및 실행"
+                ssh -i ${SSH_KEY} ${REMOTE_USER}@${REMOTE_HOST} "
+                    cd ${REMOTE_DIR} &&
+                    docker-compose build &&
+                    docker-compose up -d
+                "
+                '''
             }
         }
     }
