@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_USER = 'aicc'                        // SSH 접속할 사용자명 (관리자 제공값)
-        REMOTE_HOST = '192.168.0.80'                // 공유 서버 내부 IP
-        REMOTE_APP_DIR = '/home/aicc/schedule-planner-cicd-test'  // 원격 서버의 소스 경로
+        REMOTE_USER = 'aicc'
+        REMOTE_HOST = '192.168.0.80'
+        REMOTE_APP_DIR = '/home/aicc/schedule-planner-cicd-test'
+        ENV_CONTENT = credentials('frontend_env') // 💡 .env.local 내용 가져오기
     }
 
     stages {
@@ -18,6 +19,14 @@ pipeline {
                         credentialsId: 'github-https-token'
                     ]]
                 ])
+            }
+        }
+
+        stage('Create .env.local') {
+            steps {
+                dir('frontend') {
+                    writeFile file: '.env.local', text: "${ENV_CONTENT}"
+                }
             }
         }
 
