@@ -46,7 +46,7 @@ pipeline {
                             mkdir -p ${REMOTE_APP_DIR}
                         '
 
-                        scp -r ./* ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_APP_DIR}/
+                        scp -r ./.env.local ./DOCKER_README.md ./backend ./docker-compose.dev.yml ./docker-compose.yml ./docs ./env.example ./frontend ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_APP_DIR}/
 
                         echo "[2] 서버에서 Docker Compose로 프론트엔드만 빌드 및 실행"
                         ssh ${REMOTE_USER}@${REMOTE_HOST} '
