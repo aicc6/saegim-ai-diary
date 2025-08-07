@@ -1,50 +1,24 @@
-pipeline {
-    agent any
+FROM node:18-alpine
 
-    environment {
-        REMOTE_USER = 'aicc'
-        REMOTE_HOST = '192.168.0.80'
-        REMOTE_DIR = '/home/aicc/saegim-ai-diary'
-        SSH_KEY = '~/.ssh/id_rsa'
-    }
+WORKDIR /app
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/aicc6/saegim-ai-diary.git',
-                        credentialsId: 'github-https-token'
-                    ]]
-                ])
-            }
-        }
+# 설치용 파일만 먼저 복사
+COPY package*.json ./
 
-        stage('Deploy to Remote with Docker Compose') {
-            steps {
-                sh '''
-                echo "[1] 원격 서버 디렉토리 준비"
-                ssh -i ${SSH_KEY} ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"
+# 의존성 설치
+RUN npm ci
 
-                echo "[2] 소스 전송"
-                scp -i ${SSH_KEY} -r * ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
+# 🔥 환경변수 파일 명시적으로 복사
+COPY .env.local .env.local
 
-                echo "[3] 도커 컴포즈로 빌드 및 실행"
-                ssh -i ${SSH_KEY} ${REMOTE_USER}@${REMOTE_HOST} "
-                    cd ${REMOTE_DIR} &&
-                    docker-compose build &&
-                    docker-compose up -d
-                "
-                '''
-            }
-        }
-    }
+# 전체 앱 복사
+COPY . .
 
-    post {
-        always {
-            cleanWs()
-        }
-    }
-}
+# 앱 빌드
+RUN npm run build
+
+# 포트 설정
+EXPOSE 3000
+
+# 앱 실행
+CMD ["npm", "start"]
