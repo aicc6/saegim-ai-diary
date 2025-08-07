@@ -25,7 +25,7 @@ pipeline {
         stage('Create frontend/.env.local') {
             steps {
                 dir('frontend') {
-                    writeFile file: '.env.local', text: "${ENV_CONTENT}"
+                    writeFile file: '.env.local', text: """${ENV_CONTENT}"""
                 }
             }
         }
