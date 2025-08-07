@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_USER = 'aicc'
-        REMOTE_HOST = '192.168.0.80'
-        REMOTE_DIR = '/home/aicc/saegim-ai-diary'
+        REMOTE_USER = 'aicc'                        // SSH 접속할 사용자명 (관리자 제공값)
+        REMOTE_HOST = '192.168.0.80'                // 공유 서버 내부 IP
+        REMOTE_APP_DIR = '/home/aicc/schedule-planner-cicd-test'  // 원격 서버의 소스 경로
     }
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/aicc6/saegim-ai-diary.git',
+                        url: 'https://github.com/seominji58/schedule-planner-cicd-test.git',
                         credentialsId: 'github-https-token'
                     ]]
                 ])
@@ -23,36 +23,34 @@ pipeline {
 
         stage('Deploy to Remote with Docker Compose') {
             steps {
-                // SSH Credential을 사용
-                sshagent (credentials: ['aicc-ssh']) {
-                    sh '''
-                    set -e  # 실패 시 즉시 중단
+                sshagent(credentials: ['aicc']) {
+                    sh """
+                        echo "[1] 서버에 코드 복사 중..."
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                            rm -rf ${REMOTE_APP_DIR} &&
+                            mkdir -p ${REMOTE_APP_DIR}
+                        '
 
-                    echo "[1] ✅ 원격 서버 디렉토리 생성 또는 유지"
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_DIR}"
+                        scp -r ./* ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_APP_DIR}/
 
-                    echo "[2] ✅ 코드 파일을 원격 서버로 전송 (숨김파일 포함)"
-                    scp -o StrictHostKeyChecking=no -r . ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}
-
-                    echo "[3] ✅ 원격 서버에서 Docker Compose 빌드 및 실행 시작"
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} bash -c "'
-                        set -e
-                        cd ${REMOTE_DIR}
-                        echo \\"[REMOTE] 📦 docker-compose build 시작\\"
-                        docker-compose build
-                        echo \\"[REMOTE] 🚀 docker-compose up -d 시작\\"
-                        docker-compose up -d
-                        echo \\"[REMOTE] ✅ 컨테이너 정상 실행 완료\\"
-                    '"
-                    '''
+                        echo "[2] 서버에서 Docker Compose 빌드 및 실행"
+                        ssh ${REMOTE_USER}@${REMOTE_HOST} '
+                            cd ${REMOTE_APP_DIR} &&
+                            docker-compose down &&
+                            docker-compose up -d --build
+                        '
+                    """
                 }
             }
         }
     }
 
     post {
-        always {
-            cleanWs()
+        success {
+            echo '✅ 배포 성공!'
+        }
+        failure {
+            echo '❌ 배포 실패! 상태를 확인해주세요.'
         }
     }
 }
