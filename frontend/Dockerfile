@@ -7,10 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# ✅ .env.local을 컨텍스트 내부에서 복사 (빌드할 때 반드시 존재해야 함)
-COPY .env.local .env.local
-
-# 나머지 소스 복사
+# 나머지 소스 복사 (여기에는 .env.local도 포함되어 있어야 함)
 COPY . .
 
 # 정적 빌드
