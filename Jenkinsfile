@@ -4,6 +4,7 @@ pipeline {
     environment {
         REMOTE_HOST = 'aicc@192.168.0.80'
         REMOTE_DIR = '/home/aicc/schedule-planner-cicd-test'
+        ENV_CONTENT = credentials('frontend_env')  // ✅ 수정된 크리덴셜 ID
     }
 
     stages {
@@ -21,9 +22,6 @@ pipeline {
         }
 
         stage('Create frontend/.env.local') {
-            environment {
-                ENV_CONTENT = credentials('frontend-env-local')  // Jenkins 크리덴셜 아이디
-            }
             steps {
                 dir('frontend') {
                     writeFile file: '.env.local', text: "${ENV_CONTENT}"
@@ -62,6 +60,9 @@ pipeline {
     post {
         failure {
             echo '❌ 프론트엔드 배포 실패! 상태를 확인해주세요.'
+        }
+        success {
+            echo '✅ 프론트엔드 배포 성공!'
         }
     }
 }
