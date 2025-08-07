@@ -5,7 +5,7 @@ pipeline {
         REMOTE_USER = 'aicc'
         REMOTE_HOST = '192.168.0.80'
         REMOTE_APP_DIR = '/home/aicc/schedule-planner-cicd-test'
-        ENV_CONTENT = credentials('frontend_env') // 💡 .env.local 내용 가져오기
+        ENV_CONTENT = credentials('frontend_env') // .env.local 내용 (Jenkins Credential에서 불러옴)
     }
 
     stages {
@@ -26,6 +26,14 @@ pipeline {
             steps {
                 dir('frontend') {
                     writeFile file: '.env.local', text: "${ENV_CONTENT}"
+                }
+            }
+        }
+
+        stage('Create dummy backend .env') {
+            steps {
+                dir('backend') {
+                    writeFile file: '.env', text: ""
                 }
             }
         }
