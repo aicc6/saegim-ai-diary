@@ -1,7 +1,15 @@
+"use client";
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
 export default function HomePage() {
-  return (
-    <div>
-      새김 2차 프로젝트
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // 항상 로그인 페이지로 리다이렉션
+    router.push('/login');
+  }, [router]);
+
+  return null;
 }
