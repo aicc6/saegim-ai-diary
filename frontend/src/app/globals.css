@@ -1,11 +1,11 @@
 :root {
-  --primary-color: #1976d2;
-  --primary-dark: #1565c0;
-  --error-color: #d32f2f;
-  --success-color: #2e7d32;
-  --text-primary: #333;
-  --text-secondary: #666;
-  --background-color: #f0f2f5;
+  --primary-color: #3A4A6A;
+  --primary-dark: #2A3A5A;
+  --error-color: #A88B9A;
+  --success-color: #6A7A8A;
+  --text-primary: #333333;
+  --text-secondary: #5A6A7A;
+  --background-color: #F4F1EA;
   --sidebar-width: 280px;
 }
 
@@ -66,12 +66,13 @@ body {
 }
 
 .auth-error {
-  background: #ffebee;
+  background: #F4F1EA;
   color: var(--error-color);
   padding: 1rem;
   border-radius: 8px;
   font-size: 0.9rem;
   text-align: center;
+  border: 1px solid var(--error-color);
 }
 
 .auth-success {
@@ -85,7 +86,7 @@ body {
 }
 
 .auth-success h2 {
-  color: var(--success-color);
+  color: var(--primary-color);
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }
@@ -255,6 +256,13 @@ body {
 .logout-button {
   margin-top: auto;
   color: var(--error-color);
+  background: #F4F1EA;
+  border: 1px solid var(--error-color);
+}
+
+.logout-button:hover {
+  background: var(--error-color);
+  color: #F4F1EA;
 }
 
 /* 메인 컨텐츠 영역 */
@@ -447,15 +455,15 @@ body {
 }
 
 .alert-success {
-  background: #e8f5e9;
-  color: var(--success-color);
-  border: 1px solid #c8e6c9;
+  background: #F4F1EA;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 .alert-error {
-  background: #ffebee;
+  background: #F4F1EA;
   color: var(--error-color);
-  border: 1px solid #ffcdd2;
+  border: 1px solid var(--error-color);
 }
 
 /* 계정 설정 페이지 스타일 */
@@ -530,36 +538,36 @@ body {
 
 /* 위험 구역 스타일 */
 .danger-zone {
-  background: #fff5f5;
-  border-left: 4px solid #dc3545;
+  background: #F4F1EA;
+  border-left: 4px solid var(--error-color);
 }
 
 .danger-title {
-  color: #dc3545;
+  color: var(--error-color);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .danger-description {
-  color: #dc3545;
+  color: var(--error-color);
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: #fef2f2;
+  background: #F4F1EA;
   border-radius: 8px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--error-color);
 }
 
 .delete-account-section {
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--error-color);
 }
 
 .delete-account-section h3 {
-  color: #dc3545;
+  color: var(--error-color);
   margin-bottom: 0.75rem;
   font-size: 1.1rem;
 }
@@ -571,8 +579,8 @@ body {
 }
 
 .btn-danger {
-  background: #dc3545;
-  color: white;
+  background: var(--error-color);
+  color: #F4F1EA;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -583,7 +591,7 @@ body {
 }
 
 .btn-danger:hover {
-  background: #c82333;
+  background: #8A6B7A;
   transform: translateY(-1px);
 }
 
@@ -598,31 +606,31 @@ body {
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--error-color);
 }
 
 .delete-confirm-section h3 {
-  color: #dc3545;
+  color: var(--error-color);
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
 
 .warning-box {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
+  background: #F4F1EA;
+  border: 1px solid var(--error-color);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .warning-box h4 {
-  color: #856404;
+  color: var(--error-color);
   margin-bottom: 0.75rem;
   font-size: 1rem;
 }
 
 .warning-box ul {
-  color: #856404;
+  color: var(--error-color);
   padding-left: 1.5rem;
 }
 
@@ -748,15 +756,15 @@ body {
 }
 
 .reset-password-alert.alert-success {
-  background: #e8f5e9;
-  color: var(--success-color);
-  border: 1px solid #c8e6c9;
+  background: #F4F1EA;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 .reset-password-alert.alert-error {
-  background: #ffebee;
+  background: #F4F1EA;
   color: var(--error-color);
-  border: 1px solid #ffcdd2;
+  border: 1px solid var(--error-color);
 }
 
 .alert-icon {
@@ -834,7 +842,7 @@ body {
 
 .success-title {
   font-size: 1.5rem;
-  color: var(--success-color);
+  color: var(--primary-color);
   margin-bottom: 1rem;
   font-weight: 600;
 }
